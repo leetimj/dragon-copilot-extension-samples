@@ -7,7 +7,7 @@ using System.Text.Json.Serialization;
 namespace Dragon.Copilot.Models;
 
 /// <summary>
-/// Base class for all resource types that can be included in an Action Data
+/// Base class for all action data payloads (action data objects) used by Dragon Copilot actions.
 /// </summary>
 [JsonDerivedType(typeof(RejectActionData))]
 [JsonDerivedType(typeof(CopyToClipboardActionData))]
@@ -29,6 +29,6 @@ public class ActionData
     /// </summary>
     [JsonExtensionData]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
-   public IDictionary<string, object?>? ActionMappings { get; init; }
+    public IDictionary<string, object?>? ActionMappings { get; init; }
 
 }

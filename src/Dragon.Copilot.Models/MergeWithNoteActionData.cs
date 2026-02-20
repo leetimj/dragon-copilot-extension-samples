@@ -7,7 +7,7 @@ using System.Text.Json.Serialization;
 namespace Dragon.Copilot.Models;
 
 /// <summary>
-/// Represents the data of an Append to Note Section Action. 
+/// Represents the data of a Merge with Note action.
 /// </summary>
 public class MergeWithNoteActionData : ActionData
 {

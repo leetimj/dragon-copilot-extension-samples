@@ -14,7 +14,7 @@ public class VisualizationAction
     /// Display type for the action (required)
     /// </summary>
     [JsonPropertyName("type")]
-    public required string Type { get; set; } = "Action.Execute";
+    public string Type { get; set; } = "Action.Execute";
 
     /// <summary>
     /// Id for an action (required)
