@@ -88,7 +88,7 @@ public class ProcessingService : IProcessingService
             Document = note.Document,
         };
 
-        foreach(var entity in entities)
+        foreach (var entity in entities)
         {
             sampleEntities.Resources?.Add(entity);
         }
@@ -200,14 +200,14 @@ public class ProcessingService : IProcessingService
             {
                 type = "TextBlock",
                 text = "🔍 Clinical Entities Extracted",
-                weight = "bolder",
+                weight = "Bolder",
             },
             new
             {
                 type = "TextBlock",
                 text = $"Found {entities.Count} clinical {(entities.Count == 1 ? "entity" : "entities")} in the note",
                 wrap = true,
-                spacing = "small"
+                spacing = "Small"
             }
         };
 
@@ -224,7 +224,7 @@ public class ProcessingService : IProcessingService
                 {
                     type = "Container",
                     style = "emphasis",
-                    spacing = "medium",
+                    spacing = "Medium",
                     items = new object[]
                     {
                         new
@@ -242,7 +242,7 @@ public class ProcessingService : IProcessingService
                                         {
                                             type = "TextBlock",
                                             text = GetEntityIcon(entityType),
-                                            spacing = "none"
+                                            spacing = "None"
                                         }
                                     }
                                 },
@@ -256,21 +256,21 @@ public class ProcessingService : IProcessingService
                                         {
                                             type = "TextBlock",
                                             text = $"**{GetEntityTypeDisplayName(entityType)}**",
-                                            weight = "bolder",
-                                            spacing = "none"
+                                            weight = "Bolder",
+                                            spacing = "None"
                                         },
                                         new
                                         {
                                             type = "TextBlock",
                                             text = entityName,
-                                            spacing = "none"
+                                            spacing = "None"
                                         },
                                         new
                                         {
                                             type = "TextBlock",
                                             text = entityValue,
                                             wrap = true,
-                                            spacing = "small"
+                                            spacing = "Small"
                                         }
                                     }
                                 }
@@ -294,8 +294,7 @@ public class ProcessingService : IProcessingService
                     {
                         type = "TextBlock",
                         text = "ℹ️ No clinical entities were detected in this note.",
-                        wrap = true,
-                        horizontalAlignment = "Center"
+                        wrap = true
                     }
                 }
             });
@@ -306,8 +305,7 @@ public class ProcessingService : IProcessingService
         {
             type = "TextBlock",
             text = $"Processed at {DateTime.UtcNow:yyyy-MM-dd HH:mm:ss} UTC",
-            horizontalAlignment = "Right",
-            spacing = "medium"
+            spacing = "Medium"
         });
 
         return new VisualizationResource
@@ -322,31 +320,91 @@ public class ProcessingService : IProcessingService
                 Type = "AdaptiveCard",
                 Version = "1.3",
                 Body = bodyElements.ToArray(),
-            },
-            Actions = new List<VisualizationAction>
-            {
-                new()
+                Actions = new List<VisualizationAction>
                 {
-                    Title = "Accept Analysis",
-                    Action = VisualizationActionType.Accept,
-                    ActionType = ActionButtonType.Accept,
-                    Code = "Accept",
+                    new()
+                    {
+
+                        Type = "Action.Execute",
+                        Title = "Dismiss",
+                        Verb = VisualizationActionVerb.Reject,
+                        Id = "rejectAction",
+                        Data = new RejectActionData
+                        {
+                            DragonExtensionToolName = "RejectCardTool",
+                            ActionMappings = new Dictionary<string, object?>
+                            {
+                                {"reason", "User dismissed the clinical entity card" }
+                            }
+                        },
+                    },
+                    new()
+                    {
+                        Type = "Action.Execute",
+                        Title = "Regenerate",
+                        Verb = VisualizationActionVerb.Regenerate,
+                        Id = "regenerateAction",
+                        Data = new RegenerateActionData
+                        {
+                            DragonExtensionToolName = "RegenerateCardTool",
+                            ActionMappings = new Dictionary<string, object?>
+                            {
+                                {"reason", "User requested to regenerate the clinical entity card" }
+                            }
+                        },
+                    },
+                    new()
+                    {
+                        Type = "Action.Execute",
+                        Title = "Append to note",
+                        Verb = VisualizationActionVerb.AppendToNoteSection,
+                        Id = "appendToNoteAction",
+                        Data = new AppendToNoteSectionActionData
+                        {
+                            DragonExtensionToolName = "AppendToNoteTool",
+                            DragonAppendContent = "PHYSICAL EXAMINATION: BP 128/82, HR 78, RR 16",
+                            ActionMappings = new Dictionary<string, object?>
+                            {
+                                {"reason", "User wants to append the extracted clinical entities to the note" }
+                            }
+                        },
+                    },
+                    new()
+                    {
+                        Type = "Action.Execute",
+                        Title = "Copy to Clipboard",
+                        Verb = VisualizationActionVerb.CopyToClipboard,
+                        Id = "copyToClipboardAction",
+                        Data = new CopyToClipboardActionData
+                        {
+                            DragonExtensionToolName = "CopyToClipboardTool",
+                            DragonClipboardContent = "Extracted Clinical Entities:\n- Diabetes Mellitus (ICD-10-CM Code E11.9)\n- Blood Pressure: 145/90 mmHg\n- Medication: Metformin",
+                            ActionMappings = new Dictionary<string, object?>
+                            {
+                                {"reason", "User wants to copy the extracted clinical entities to clipboard" }
+                            }
+                        },
+                    },
+                    new()
+                    {
+                        Type = "Action.Execute",
+                        Title = "UpdateNote with selections",
+                        Verb = VisualizationActionVerb.MergeWithNote,
+                        Id = "mergeWithNoteAction",
+                        Data = new MergeWithNoteActionData
+                        {
+                            DragonExtensionToolName = "ClinicalEntityUpdater",
+                            DragonInputs = new List<string> { "codingSolution", "icdCategory", "confidenceLevel" },
+                            DragonMatchContent = "diabetes",
+                            ActionMappings = new Dictionary<string, object?>
+                            {
+                                { "codingSolution", "ICD-10-CM Code E11.9" },
+                                { "icdCategory", "Diabetes Mellitus" },
+                                { "confidenceLevel", "High" }
+                            }
+                        },
+                    },
                 },
-                new()
-                {
-                    Title = "Copy to Note",
-                    Action = VisualizationActionType.Copy,
-                    ActionType = ActionButtonType.Copy,
-                    Code = "CLINICAL ENTITY ANALYSIS\n\nEntities detected:\n" +
-                           string.Join("\n", entities.Select(e => $"- {GetEntityNameFromResource(e)} ({GetEntityTypeFromResource(e)})"))
-                },
-                new()
-                {
-                    Title = "Reject Analysis",
-                    Action = VisualizationActionType.Reject,
-                    ActionType = ActionButtonType.Reject,
-                    Code = "Reject"
-                }
             },
             References = new List<VisualizationReference>(),
             PayloadSources = new List<PayloadSource>
