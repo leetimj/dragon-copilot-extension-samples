@@ -192,6 +192,7 @@ public class ProcessingService : IProcessingService
 
     private static VisualizationResource CreateAdaptiveCardResource(List<IResource> entities)
     {
+        const string actionTypeExecute = "Action.Execute";
         // Create the body elements list
         var bodyElements = new List<object>
         {
@@ -325,7 +326,7 @@ public class ProcessingService : IProcessingService
                     new()
                     {
 
-                        Type = "Action.Execute",
+                        Type = actionTypeExecute,
                         Title = "Dismiss",
                         Verb = VisualizationActionVerb.Reject,
                         Id = "rejectAction",
@@ -340,7 +341,7 @@ public class ProcessingService : IProcessingService
                     },
                     new()
                     {
-                        Type = "Action.Execute",
+                        Type = actionTypeExecute,
                         Title = "Regenerate",
                         Verb = VisualizationActionVerb.Regenerate,
                         Id = "regenerateAction",
@@ -355,7 +356,7 @@ public class ProcessingService : IProcessingService
                     },
                     new()
                     {
-                        Type = "Action.Execute",
+                        Type = actionTypeExecute,
                         Title = "Append to note",
                         Verb = VisualizationActionVerb.AppendToNoteSection,
                         Id = "appendToNoteAction",
@@ -371,7 +372,7 @@ public class ProcessingService : IProcessingService
                     },
                     new()
                     {
-                        Type = "Action.Execute",
+                        Type = actionTypeExecute,
                         Title = "Copy to Clipboard",
                         Verb = VisualizationActionVerb.CopyToClipboard,
                         Id = "copyToClipboardAction",
@@ -387,7 +388,7 @@ public class ProcessingService : IProcessingService
                     },
                     new()
                     {
-                        Type = "Action.Execute",
+                        Type = actionTypeExecute,
                         Title = "UpdateNote with selections",
                         Verb = VisualizationActionVerb.MergeWithNote,
                         Id = "mergeWithNoteAction",
